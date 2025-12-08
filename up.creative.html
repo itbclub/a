@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Creative - ITB Club</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-blue: #1C2A39;
+            --lime-green: #92D379;
+            --teal: #5AC1A9;
+            --white: #FFFFFF;
+            --sidebar-bg: #182431;
+            --main-bg: #1C2A39;
+            --font-family: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { font-family: var(--font-family); background-color: var(--main-bg); color: var(--white); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* Sidebar */
+        .sidebar { 
+            width: var(--sidebar-width); 
+            background-color: var(--sidebar-bg); 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+        .sidebar-header { text-align: center; margin-bottom: 40px; }
+        .sidebar-logo img { max-width: 80px; }
+        .nav-menu { flex-grow: 1; }
+        .nav-section-title { color: rgba(255, 255, 255, 0.4); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 15px; margin-top: 25px; margin-bottom: 10px; }
+        .nav-list { list-style: none; }
+        .nav-item a { display: flex; align-items: center; padding: 12px 15px; color: var(--white); text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.3s; }
+        .nav-item a:hover, .nav-item.active a { background-color: var(--dark-blue); color: var(--lime-green); }
+        .nav-item i { margin-right: 15px; width: 20px; text-align: center; }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; width: 100%; }
+        
+        .top-bar { 
+            display: flex; 
+            align-items: center; 
+            padding: 20px 30px; 
+            background-color: var(--sidebar-bg); 
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+        
+        .menu-btn { display: none; background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; margin-right: 15px; }
+        .top-bar h1 { font-size: 1.8rem; }
+        
+        .content-area { padding: 40px; }
+        
+        /* Form Styles */
+        .upload-form { max-width: 700px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--dark-blue);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+        }
+        .submit-btn {
+            background-color: var(--lime-green);
+            color: var(--dark-blue);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover { background-color: #7bc561; }
+        .submit-btn:disabled { background-color: #555; cursor: not-allowed; }
+        #form-message { margin-top: 20px; font-weight: 600; }
+        .success { color: var(--lime-green); }
+        .error { color: #ff6b6b; }
+
+        /* Overlay */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .sidebar { position: fixed; left: -100%; width: 280px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+            .sidebar.active { left: 0; transform: translateX(0); }
+            .menu-btn { display: block; }
+            .top-bar { padding: 15px 20px; }
+            .top-bar h1 { font-size: 1.4rem; }
+            .content-area { padding: 20px; }
+        }
+    </style>
+     <script>
+        if (!localStorage.getItem('loggedInUser')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+       <div class="sidebar-header">
+            <a href="index.html" class="sidebar-logo"><img src="https://i.postimg.cc/Qt69FVzz/logo.png" alt="ITB Club Logo"></a>
+        </div>
+        <nav class="nav-menu">
+            <ul class="nav-list">
+                <li class="nav-item"><a href="member.panel.html"><i class="fas fa-home"></i> Home</a></li>
+            </ul>
+            <h3 class="nav-section-title">Resources</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="r.mindmap.html"><i class="fas fa-project-diagram"></i> Mindmap</a></li>
+                <li class="nav-item"><a href="r.roadmap.html"><i class="fas fa-road"></i> Roadmap</a></li>
+                <li class="nav-item"><a href="r.ebook.html"><i class="fas fa-book-open"></i> E-Book</a></li>
+                <li class="nav-item"><a href="r.ecosystem.html"><i class="fas fa-sitemap"></i> Eco-System</a></li>
+                <li class="nav-item"><a href="r.tool.html"><i class="fas fa-tools"></i> Tools</a></li>
+            </ul>
+            <h3 class="nav-section-title">Explore</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="list.idea.html"><i class="fas fa-lightbulb"></i> Idea</a></li>
+                <li class="nav-item"><a href="list.creative.html"><i class="fas fa-paint-brush"></i> Creative</a></li>
+                <li class="nav-item"><a href="list.landing.html"><i class="fas fa-file-alt"></i> Landing Page</a></li>
+            </ul>
+             <h3 class="nav-section-title">Upload</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="up.idea.html"><i class="fas fa-plus-circle"></i> New Idea</a></li>
+                <li class="nav-item active"><a href="up.creative.html"><i class="fas fa-plus-circle"></i> New Creative</a></li>
+                <li class="nav-item"><a href="up.landing.html"><i class="fas fa-plus-circle"></i> New Landing Page</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+            <h1>Upload a New Creative</h1>
+        </header>
+        <section class="content-area">
+            <form id="creative-form" class="upload-form">
+                <div class="form-group">
+                    <label for="imageLink">Image Link</label>
+                    <input type="url" id="imageLink" name="imageLink" placeholder="https://example.com/image.png" required>
+                </div>
+                <div class="form-group">
+                    <label for="details">Short Details</label>
+                    <input type="text" id="details" name="details" required>
+                </div>
+                <button type="submit" class="submit-btn" id="submit-button">Submit Creative</button>
+                <p id="form-message"></p>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVIjtDgfCSECgorwn7xQz7gUIaiAiQuh_pXJVXUglXzEHOUQ2OZPa6D6KNABFRSSPx/exec";
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Logic
+            const menuBtn = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            function toggleMenu() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
+            if(menuBtn) menuBtn.addEventListener('click', toggleMenu);
+            if(overlay) overlay.addEventListener('click', toggleMenu);
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.addEventListener('click', () => { if(window.innerWidth <= 768) toggleMenu(); });
+            });
+
+            // Form Logic
+            const form = document.getElementById('creative-form');
+            const submitButton = document.getElementById('submit-button');
+            const formMessage = document.getElementById('form-message');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const memberName = localStorage.getItem('memberName') || 'Anonymous';
+                submitButton.disabled = true;
+                submitButton.textContent = 'Submitting...';
+                formMessage.textContent = '';
+                
+                const formData = new FormData(form);
+                const data = {
+                    type: 'creative',
+                    creatorName: memberName,
+                    imageLink: formData.get('imageLink'),
+                    details: formData.get('details')
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        formMessage.textContent = "Creative submitted successfully!";
+                        formMessage.className = 'success';
+                        form.reset();
+                    } else {
+                        throw new Error(res.message || 'An unknown error occurred.');
+                    }
+                })
+                .catch(error => {
+                    formMessage.textContent = `Error: ${error.message}`;
+                    formMessage.className = 'error';
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Submit Creative';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Upload Roadmap - ITB Club</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark-blue: #1C2A39; --lime-green: #92D379; --teal: #5AC1A9; --light-blue: #44A6DE; --white: #FFFFFF; --font-family: 'Poppins', sans-serif; --sidebar-bg: #182431; --main-bg: #1C2A39; --sidebar-width: 260px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { font-family: var(--font-family); background-color: var(--main-bg); color: var(--white); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-width); background-color: var(--sidebar-bg); padding: 20px; display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease-in-out; z-index: 1000; height: 100vh; overflow-y: auto; position: sticky; top: 0;}
+        .sidebar-header { text-align: center; margin-bottom: 40px; }
+        .sidebar-logo img { max-width: 80px; }
+        .nav-menu { flex-grow: 1; }
+        .nav-section-title { color: rgba(255, 255, 255, 0.4); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 15px; margin-top: 25px; margin-bottom: 10px; }
+        .nav-list { list-style: none; }
+        .nav-item a { display: flex; align-items: center; padding: 12px 15px; color: var(--white); text-decoration: none; border-radius: 8px; transition: background-color 0.3s, color 0.3s; font-weight: 500; }
+        .nav-item a:hover, .nav-item.active a { background-color: var(--dark-blue); color: var(--lime-green); }
+        .nav-item i { margin-right: 15px; width: 20px; text-align: center; }
+        .sidebar-footer { margin-top: auto; padding-top: 20px;}
+
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; width: 100%; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; background-color: var(--sidebar-bg); border-bottom: 1px solid rgba(255, 255, 255, 0.1); position: sticky; top: 0; z-index: 900; }
+        .top-bar-left { display: flex; align-items: center; }
+        .menu-btn { display: none; background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; margin-right: 15px; }
+        .top-bar h1 { font-size: 1.8rem; }
+        
+        .user-profile { display: flex; align-items: center; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
+        .user-info .user-name { font-weight: 600; }
+        .user-info .user-role { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
+        .logout-btn { background: none; border: none; color: var(--white); cursor: pointer; font-size: 1rem; margin-left: 20px; padding: 5px 10px; border-radius: 5px; transition: background-color 0.3s; }
+        .logout-btn:hover { background-color: #ff6b6b; }
+
+        /* Upload Form Area */
+        .content-area { padding: 40px; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .upload-container { background-color: var(--sidebar-bg); padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 500px; }
+        .upload-container h1 { text-align: center; margin-bottom: 30px; color: var(--lime-green); font-size: 1.5rem; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; color: rgba(255,255,255,0.7); }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.2); background-color: var(--dark-blue); color: var(--white); }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .submit-btn { width: 100%; padding: 15px; border: none; border-radius: 5px; background-color: var(--lime-green); color: var(--dark-blue); font-weight: 600; cursor: pointer; transition: background-color 0.3s; }
+        .submit-btn:hover { background-color: #7fbf68; }
+
+        /* Overlay */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 768px) {
+            .sidebar { position: fixed; left: -100%; top: 0; height: 100vh; width: 280px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); }
+            .sidebar.active { left: 0; transform: translateX(0); }
+            .menu-btn { display: block; }
+            .top-bar { padding: 15px 20px; }
+            .top-bar h1 { font-size: 1.4rem; }
+            .content-area { padding: 20px; }
+            .upload-container { padding: 20px; }
+            .user-info { display: none; }
+            .user-profile img { margin-right: 0; }
+            .logout-btn { margin-left: 15px; }
+        }
+    </style>
+    <script>
+        if (!localStorage.getItem('loggedInAdmin')) {
+            window.location.href = 'admin.login.html';
+        }
+    </script>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="sidebar-logo"><img src="https://i.postimg.cc/Qt69FVzz/logo.png" alt="ITB Club Logo"></a>
+        </div>
+        <nav class="nav-menu">
+            <ul class="nav-list">
+                <li class="nav-item"><a href="admin.panel.html"><i class="fas fa-home"></i> Home</a></li>
+            </ul>
+            <h3 class="nav-section-title">Upload</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="admin.mindmap.html"><i class="fas fa-project-diagram"></i> Mindmap</a></li>
+                <li class="nav-item active"><a href="admin.roadmap.html"><i class="fas fa-road"></i> Roadmap</a></li>
+                <li class="nav-item"><a href="admin.ebook.html"><i class="fas fa-book-open"></i> E-Book</a></li>
+                <li class="nav-item"><a href="admin.ecosystem.html"><i class="fas fa-sitemap"></i> Eco-System</a></li>
+                <li class="nav-item"><a href="admin.tool.html"><i class="fas fa-tools"></i> Tools</a></li>
+                <li class="nav-item"><a href="admin.project.html"><i class="fas fa-tasks"></i> Project</a></li>
+            </ul>
+            <h3 class="nav-section-title">Data Base</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="https://docs.google.com/spreadsheets/d/1Y1N2Y6eBDXSd4wJy4L0NkN_8ALBpaO3Q1aTlhBGejTw/edit?usp=sharing" target="_blank"><i class="fas fa-users"></i> Member Management</a></li>
+                <li class="nav-item"><a href="https://docs.google.com/spreadsheets/d/1KgNGFmQjg4lfB7pi5VL1UaOQ0LHi29sRkjfSxvXHupg/edit?usp=sharing" target="_blank"><i class="fas fa-cogs"></i> Resource Management</a></li>
+                <li class="nav-item"><a href="https://docs.google.com/spreadsheets/d/1fHiLEBpFNaZZBY_OFxE_SiVwwRLajwN4I1y4kdC9Skc/edit?usp=sharing" target="_blank"><i class="fas fa-search"></i> Explore Management</a></li>
+                <li class="nav-item"><a href="https://docs.google.com/spreadsheets/d/1RlX_RRBkkmu13wn0jHsNmBsR7zuqB2NoiQAIQKpnmgE/edit?usp=sharing" target="_blank"><i class="fas fa-tasks"></i> Project Management</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+             <ul class="nav-list">
+                <li class="nav-item"><a href="login.html"><i class="fas fa-user"></i> Member Panel</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+                <h1>Upload Roadmap</h1>
+            </div>
+            <div class="user-profile">
+                <img src="https://i.postimg.cc/br7WQM9z/man-avatar.png" alt="User Avatar">
+                <div class="user-info">
+                    <span class="user-name" id="admin-name">Name</span>
+                    <span class="user-role">Admin</span>
+                </div>
+                 <button id="logout-button" class="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
+        <section class="content-area">
+            <div class="upload-container">
+                <h1>Upload New Roadmap</h1>
+                <form id="upload-form">
+                    <div class="form-group">
+                        <label for="name">Roadmap Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Short Details</label>
+                        <textarea id="details" name="details" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="image-link">Image Link</label>
+                        <input type="url" id="image-link" name="image-link" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="link">Roadmap Link</label>
+                        <input type="url" id="link" name="link" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Upload Roadmap</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu Logic
+            const menuBtn = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            function toggleMenu() { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
+            if(menuBtn){ menuBtn.addEventListener('click', toggleMenu); }
+            if(overlay){ overlay.addEventListener('click', toggleMenu); }
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.addEventListener('click', () => { if(window.innerWidth <= 768) toggleMenu(); });
+            });
+
+            // Admin Logic
+            const adminName = localStorage.getItem('adminName');
+            document.getElementById('admin-name').textContent = adminName ? adminName : "Admin";
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', () => {
+                    localStorage.removeItem('loggedInAdmin');
+                    localStorage.removeItem('adminName');
+                    alert('You have been successfully logged out.');
+                    window.location.href = 'admin.login.html';
+                });
+            }
+        });
+
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXITJu15q6v1UovpuY31Hp4aiemu_dDoabdP_q5qNFh6iUn-voxCcjqQAP2tSrPrrV/exec";
+
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                sheet: "Roadmap",
+                name: formData.get('name'),
+                details: formData.get('details'),
+                imageLink: formData.get('image-link'),
+                link: formData.get('link')
+            };
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            }).then(response => response.json())
+              .then(result => { alert('Roadmap uploaded successfully!'); document.getElementById('upload-form').reset(); })
+              .catch(error => { alert('An error occurred.'); console.error('Error:', error); });
+        });
+    </script>
+</body>
+</html>

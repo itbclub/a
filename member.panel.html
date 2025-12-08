@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Panel - ITB Club</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --dark-blue: #1C2A39;
+            --lime-green: #92D379;
+            --teal: #5AC1A9;
+            --light-blue: #44A6DE;
+            --white: #FFFFFF;
+            --font-family: 'Poppins', sans-serif;
+            --sidebar-bg: #182431;
+            --main-bg: #1C2A39;
+            --sidebar-width: 260px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: var(--font-family); 
+            background-color: var(--main-bg); 
+            color: var(--white); 
+            display: flex; 
+            min-height: 100vh; 
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* --- Sidebar --- */
+        .sidebar { 
+            width: var(--sidebar-width); 
+            background-color: var(--sidebar-bg); 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .sidebar-header { text-align: center; margin-bottom: 40px; }
+        .sidebar-logo img { max-width: 80px; }
+        
+        .nav-menu { flex-grow: 1; overflow-y: auto; }
+        /* Custom scrollbar for nav */
+        .nav-menu::-webkit-scrollbar { width: 5px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 5px; }
+
+        .nav-section-title { color: rgba(255, 255, 255, 0.4); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 15px; margin-top: 25px; margin-bottom: 10px; }
+        .nav-list { list-style: none; }
+        .nav-item a { display: flex; align-items: center; padding: 12px 15px; color: var(--white); text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.3s; }
+        .nav-item a:hover, .nav-item.active a { background-color: var(--dark-blue); color: var(--lime-green); }
+        .nav-item i { margin-right: 15px; width: 20px; text-align: center; }
+        .sidebar-footer { margin-top: auto; padding-top: 20px; }
+
+        /* --- Main Content --- */
+        .main-content { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%; /* Ensure it takes full width */
+        }
+
+        .top-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px 30px; 
+            background-color: var(--sidebar-bg); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        /* Mobile Menu Button - Hidden by default */
+        .menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .top-bar-left { display: flex; align-items: center; }
+        .top-bar h1 { font-size: 1.8rem; }
+        
+        .user-profile { display: flex; align-items: center; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover;}
+        .user-info .user-name { font-weight: 600; display: block; }
+        .user-info .user-role { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); }
+        
+        .logout-btn { background: none; border: none; color: var(--white); cursor: pointer; font-size: 1rem; margin-left: 20px; padding: 5px 10px; border-radius: 5px; transition: background-color 0.3s; }
+        .logout-btn:hover { background-color: #ff6b6b; }
+
+        .content-area { padding: 40px; }
+        .welcome-message h2 { font-size: 2.5rem; }
+        .welcome-message p { font-size: 1.2rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 40px;}
+
+        /* --- Explore Section --- */
+        .explore-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--lime-green);
+            padding-bottom: 10px;
+        }
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .post-card {
+            background-color: var(--sidebar-bg);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .post-card .post-type {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .post-type.idea { background-color: var(--light-blue); color: white; }
+        .post-type.creative { background-color: var(--teal); color: white; }
+        .post-type.landing-page { background-color: var(--lime-green); color: black; }
+        
+        .post-card h4 { font-size: 1.2rem; margin-bottom: 10px; color: var(--lime-green); word-wrap: break-word; }
+        .post-card p { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 15px; line-height: 1.5; }
+        .post-creator { font-size: 0.8rem; font-style: italic; color: rgba(255, 255, 255, 0.5); }
+        .loader { text-align: center; font-size: 1.2rem; }
+
+        /* --- Overlay for Mobile --- */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- Responsive Queries --- */
+        @media screen and (max-width: 992px) {
+            .explore-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+        }
+
+        @media screen and (max-width: 768px) {
+            /* Layout Changes */
+            .sidebar {
+                position: fixed;
+                left: -100%; /* Hide completely */
+                top: 0;
+                height: 100vh;
+                width: 280px;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            }
+            .sidebar.active {
+                left: 0;
+                transform: translateX(0);
+            }
+
+            /* Main Content Adjustments */
+            .main-content { margin-left: 0; width: 100%; }
+            .top-bar { padding: 15px 20px; }
+            .top-bar h1 { font-size: 1.4rem; }
+            .menu-btn { display: block; } /* Show Hamburger */
+
+            /* Content Area Adjustments */
+            .content-area { padding: 20px; }
+            .welcome-message h2 { font-size: 1.8rem; }
+            .welcome-message p { font-size: 1rem; margin-bottom: 30px; }
+            
+            /* User Profile Compact */
+            .user-info { display: none; } /* Hide name on small screens, show only avatar */
+            .user-profile img { margin-right: 0; }
+            .logout-btn { margin-left: 15px; }
+
+            .explore-grid { grid-template-columns: 1fr; } /* Stack cards */
+        }
+    </style>
+
+    <script>
+        // Check Login Status immediately
+        if (!localStorage.getItem('loggedInUser')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <!-- Overlay for Mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="sidebar-logo"><img src="https://i.postimg.cc/Qt69FVzz/logo.png" alt="ITB Club Logo"></a>
+        </div>
+        <nav class="nav-menu">
+            <ul class="nav-list">
+                <li class="nav-item active"><a href="member.panel.html"><i class="fas fa-home"></i> Home</a></li>
+            </ul>
+            <h3 class="nav-section-title">Resources</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="r.mindmap.html"><i class="fas fa-project-diagram"></i> Mindmap</a></li>
+                <li class="nav-item"><a href="r.roadmap.html"><i class="fas fa-road"></i> Roadmap</a></li>
+                <li class="nav-item"><a href="r.ebook.html"><i class="fas fa-book-open"></i> E-Book</a></li>
+                <li class="nav-item"><a href="r.ecosystem.html"><i class="fas fa-sitemap"></i> Eco-System</a></li>
+                <li class="nav-item"><a href="r.tool.html"><i class="fas fa-tools"></i> Tools</a></li>
+            </ul>
+            <h3 class="nav-section-title">Explore</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="list.idea.html"><i class="fas fa-lightbulb"></i> Idea</a></li>
+                <li class="nav-item"><a href="list.creative.html"><i class="fas fa-paint-brush"></i> Creative</a></li>
+                <li class="nav-item"><a href="list.landing.html"><i class="fas fa-file-alt"></i> Landing Page</a></li>
+            </ul>
+            <h3 class="nav-section-title">Upload</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="up.idea.html"><i class="fas fa-plus-circle"></i> New Idea</a></li>
+                <li class="nav-item"><a href="up.creative.html"><i class="fas fa-plus-circle"></i> New Creative</a></li>
+                <li class="nav-item"><a href="up.landing.html"><i class="fas fa-plus-circle"></i> New Landing Page</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+             <ul class="nav-list">
+                <li class="nav-item"><a href="admin.login.html"><i class="fas fa-user-shield"></i> Admin</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+                <h1>Member Panel</h1>
+            </div>
+            <div class="user-profile">
+                <img src="https://i.postimg.cc/br7WQM9z/man-avatar.png" alt="User Avatar">
+                <div class="user-info">
+                    <span class="user-name" id="member-name">Name</span>
+                    <span class="user-role">Member</span>
+                </div>
+                 <button id="logout-button" class="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
+        <section class="content-area">
+            <div class="welcome-message">
+                <h2>Welcome Back, <span id="welcome-member-name">Member</span>!</h2>
+                <p>This is your personal dashboard. Here are the latest posts from the community.</p>
+            </div>
+            <div class="explore-section">
+                <h3>Recent Post</h3>
+                <div id="latest-posts-container" class="explore-grid">
+                    <p class="loader">Loading latest posts...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVIjtDgfCSECgorwn7xQz7gUIaiAiQuh_pXJVXUglXzEHOUQ2OZPa6D6KNABFRSSPx/exec';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Mobile Menu Toggle Logic ---
+            const menuBtn = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+
+            function toggleMenu() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+
+            menuBtn.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+
+            // Close sidebar when a link is clicked (optional UX improvement for mobile)
+            const navLinks = document.querySelectorAll('.nav-item a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(window.innerWidth <= 768) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // --- Personalize Welcome Message ---
+            const memberName = localStorage.getItem('memberName');
+            if (memberName) {
+                document.getElementById('member-name').textContent = memberName;
+                document.getElementById('welcome-member-name').textContent = memberName;
+            } else {
+                document.getElementById('member-name').textContent = "Valued";
+                document.getElementById('welcome-member-name').textContent = "Valued Member";
+            }
+
+            // --- Setup Logout Button ---
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', () => {
+                    localStorage.removeItem('loggedInUser');
+                    localStorage.removeItem('memberName');
+                    alert('You have been successfully logged out.');
+                    window.location.href = 'login.html';
+                });
+            }
+
+            // --- Fetch and Display Latest Posts ---
+            fetch(`${SCRIPT_URL}?page=latest`)
+                .then(response => response.json())
+                .then(res => {
+                    const container = document.getElementById('latest-posts-container');
+                    if (res.status === 'success' && res.data.length > 0) {
+                        container.innerHTML = ''; // Clear loader
+                        res.data.forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'post-card';
+                            
+                            // Handling potential empty or null values
+                            let title = item.Topic || "Untitled Post";
+                            let details = item.Details || "No details provided.";
+                            let creator = item.CreatorName || "Anonymous";
+                            let typeStr = item.type || "General";
+                            let typeClass = typeStr.toLowerCase().replace(/\s+/g, '-');
+
+                            card.innerHTML = `
+                                <span class="post-type ${typeClass}">${typeStr}</span>
+                                <h4>${truncate(title, 40)}</h4>
+                                <p>${truncate(details, 100)}</p>
+                                <p class="post-creator">by ${creator}</p>
+                            `;
+                            container.appendChild(card);
+                        });
+                    } else {
+                        container.innerHTML = '<p>No recent posts found.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching latest posts:', error);
+                    document.getElementById('latest-posts-container').innerHTML = '<p>Could not load posts. Please try again later.</p>';
+                });
+        });
+
+        function truncate(str, n){
+            return (str && str.length > n) ? str.slice(0, n-1) + '&hellip;' : str;
+        }
+    </script>
+</body>
+</html>
